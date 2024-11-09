@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soil Pollution Awareness</title>
+    <style>
+        *{
+            background-color: #cbf5dd;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #2E7D32;
+            color: #FFF;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 10px;
+        }
+
+        nav ul li a {
+            color: #FFF;
+            text-decoration: none;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        #map-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+
+        #beforeAfterSlider {
+            position: relative;
+            max-width: 600px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #beforeAfterSlider img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        footer {
+            background-color: #2E7D32;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        img{
+            border-radius: 1rem;
+            width: 595px;
+            height: 285px;
+        }
+    </style>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+</head>
+
+<body>
+    <center>
+    <header>
+        <h1 style="background-color: #2E7D32;">Soil Pollution Awareness</h1>
+        <nav >
+            <ul style="background-color: #2E7D32;">
+                <li><a href="#home" style="background-color: #2E7D32;">Home</a></li>
+                <li><a href="#map"style="background-color: #2E7D32;">Interactive Map</a></li>
+                <li><a href="#causes" style="background-color: #2E7D32;">Causes & Effects</a></li>
+                <li><a href="#solutions" style="background-color: #2E7D32;">Solutions</a></li>
+                <li><a href="#resources" style="background-color: #2E7D32;">Additional Resources</a></li>
+                <li><a href="#pledge" style="background-color: #2E7D32;">Pledge</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Homepage Section -->
+        <section id="home">
+            <h2>Welcome to Soil Pollution Awareness</h2>
+            <p>Learn about soil pollution, its causes, effects, and how to combat it through interactive content.</p>
+            <div class="visuals">
+                <img src="data:image/jpeg;base64,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"
+                    alt="Soil Pollution">
+            </div>
+        </section>
+
+        <!-- Interactive Map Section -->
+        <section id="map">
+            <h1>Interactive Map</h1>
+            <div id="map-container"></div>
+        </section>
+
+        <!-- Causes & Effects Section -->
+        <section id="causes">
+            <h1>Causes & Effects of Soil Pollution</h1>
+            <div class="causes">
+                <h3>Causes</h3>
+                <div class="infographics">
+                    
+                    <img src="DALL·E 2024-10-14 23.30.21 - A visual representation of soil pollution showing three main causes_ industrial waste, deforestation, and pesticide use. The image is divided into thr - Copy.png" style="height: 500px;">
+                    
+                </div>
+            </div>
+            <div class="effects">
+                <h1>Effects</h1>
+                <div class="before-after">
+                    <b><p>Interactive before-and-after visuals showing the long-term effects of soil pollution.</p></b>
+                    <div id="beforeAfterSlider">
+                        <img src="before after.png">
+                         
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Quiz Section -->
+        <section id="quiz">
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container">
+                <p>Start the quiz to see how much you know about soil pollution.</p>
+                <button onclick="startQuiz()">Take a Quiz</button>
+            </div>
+        </section>
+
+        <!-- Solutions Section -->
+        <section id="solutions">
+            <h1>Solutions for Soil Pollution</h1>
+
+    <h3>1. Reduce Industrial Waste</h3>
+    <ul>
+        <li><strong>Stricter Regulations:</strong> Enforce strict regulations on industrial waste disposal. Factories should use eco-friendly waste management systems and ensure proper treatment of waste before disposal.</li>
+        <li><strong>Recycling and Reuse:</strong> Encourage industries to recycle materials and reduce waste generation. Reusing industrial by-products can prevent toxic substances from reaching the soil.</li>
+    </ul>
+
+    <h3>2. Sustainable Agriculture</h3>
+    <ul>
+        <li><strong>Organic Farming:</strong> Shift to organic farming practices that avoid the use of harmful chemical pesticides and fertilizers. Organic methods use natural fertilizers like compost and biological pest control.</li>
+        <li><strong>Crop Rotation:</strong> Rotate crops to maintain soil health, preventing nutrient depletion and reducing the need for chemical inputs.</li>
+        <li><strong>Integrated Pest Management (IPM):</strong> Implement IPM techniques that use natural predators and mechanical controls to reduce pesticide use.</li>
+    </ul>
+
+    <h3>3. Reforestation and Afforestation</h3>
+    <ul>
+        <li><strong>Plant More Trees:</strong> Encourage reforestation and afforestation efforts to restore barren lands. Trees improve soil structure, prevent erosion, and enhance soil quality.</li>
+        <li><strong>Preserve Existing Forests:</strong> Protect existing forests to maintain natural ecosystems and prevent soil degradation from deforestation.</li>
+    </ul>
+
+    <h3>4. Improved Waste Management</h3>
+    <ul>
+        <li><strong>Composting:</strong> Promote composting organic waste like food scraps and yard waste, which can enrich the soil without harmful chemicals.</li>
+        <li><strong>Reduce Plastic Use:</strong> Minimize plastic consumption, which contributes to soil contamination through microplastic pollution.</li>
+        <li><strong>Landfill Management:</strong> Improve landfill management by containing hazardous materials and implementing technologies to prevent leachate from seeping into the soil.</li>
+    </ul>
+
+    <h3>5. Phytoremediation</h3>
+    <p><strong>Using Plants to Absorb Toxins:</strong> Use specific plants known for their ability to absorb heavy metals and pollutants from the soil. For example, sunflowers and certain grasses can help detoxify contaminated soils.</p>
+
+    <h3>6. Bioremediation</h3>
+    <p><strong>Microorganisms for Cleanup:</strong> Use microorganisms or fungi to break down and neutralize pollutants in the soil. This natural process can help degrade toxic substances and restore soil health.</p>
+
+    <h3>7. Education and Awareness</h3>
+    <ul>
+        <li><strong>Public Awareness Campaigns:</strong> Increase public awareness about the harmful effects of soil pollution and how everyday actions can contribute to it. Encourage sustainable practices at home and in communities.</li>
+        <li><strong>Eco-Friendly Practices:</strong> Promote the use of eco-friendly products and encourage individuals to reduce their environmental footprint.</li>
+    </ul>
+
+            <div id="location-based-tips"></div>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources">
+            <h2>Additional Resources</h2>
+            <div class="resources-list">
+                <ul>
+                    <li><a target="_blank" href="https://sageuniversity.edu.in/blogs/organic-farming-a-key-to-sustainable-agriculture">Blog: How Organic Farming Helps Combat Soil Pollution</a></li>
+                    <li><a target="_blank" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2984095/#:~:text=Impact%20on%20environment,%2C%20and%20non%2Dtarget%20plants.">Research: The Impact of Pesticides on Soil Health</a></li>
+                    <li><a target="_blank" href="https://www.youtube.com/watch?v=wpin4FqnJJU">Video: Soil Remediation Techniques Explained</a></li>
+                </ul>
+            </div>
+        </section>
+        <!-- Soil Cleanup Tracker -->
+        <section id="tracker">
+            
+        </section>
+
+        <!-- Pledge Section -->
+        <section id="pledge">
+            <h2>Pledge to Help</h2>
+            <button onclick="makePledge()">Make a Pledge</button>
+        </section>
+    </main>
+
+    <footer>
+        <p style="background-color: #2E7D32;">&copy; 2024 Soil Pollution Awareness Initiative</p>
+    </footer>
+</center>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Leaflet map initialization
+            const map = L.map('map-container').setView([51.505, -0.09], 2);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add pollution hotspots (dummy data)
+            const pollutionHotspots = [
+                { lat: 37.7749, lon: -122.4194, region: 'San Francisco', pollutionLevel: 'High' },
+                { lat: 48.8566, lon: 2.3522, region: 'Paris', pollutionLevel: 'Moderate' },
+                { lat: 13.0843, lon: 80.2705, region:"Chennai", pollutionLevel: 'High' },
+                { lat: 36.7551, lon: 66.8975, region:"Balkhash", pollutionLevel: 'High'},
+                { lat: 31.2304, lon: 121.4737, region:"Shanghai", pollutionLevel: 'High'},
+            ];
+
+            pollutionHotspots.forEach(hotspot => {
+                L.marker([hotspot.lat, hotspot.lon]).addTo(map)
+                    .bindPopup(`<b>${hotspot.region}</b><br>Pollution Level: ${hotspot.pollutionLevel}`);
+            });
+
+            // Quiz Handling
+            const quizData = [
+                {
+                    question: "What is one major cause of soil pollution?",
+                    options: ["Plastic waste", "Pesticides", "Wind erosion"],
+                    correct: 1
+                },
+                {
+                    question: "Which of these is an effect of soil pollution?",
+                    options: ["Reduced soil fertility", "Increased crop yield", "Improved soil texture"],
+                    correct: 0
+                }
+            ];
+
+            let questionIndex = 0;
+
+            window.startQuiz = () => {
+                const container = document.getElementById('quiz-container');
+                const currentQuestion = quizData[questionIndex];
+
+                container.innerHTML = `
+                    <p>${currentQuestion.question}</p>
+                    <ul>
+                        ${currentQuestion.options.map((option, index) =>
+                    `<li><button onclick="checkAnswer(${index})">${option}</button></li>`
+                ).join('')}
+                    </ul>
+                `;
+            };
+
+            window.checkAnswer = (selectedIndex) => {
+                const currentQuestion = quizData[questionIndex];
+
+                if (selectedIndex === currentQuestion.correct) {
+                    alert('Correct!');
+                } else {
+                    alert('Incorrect, try again!');
+                }
+
+                questionIndex++;
+                if (questionIndex < quizData.length) {
+                    startQuiz();
+                } else {
+                    alert('Quiz completed!');
+                    questionIndex = 0;
+                }
+            };
+
+            // Pledge functionality
+            window.makePledge = () => {
+                const userName = prompt("Enter your name to pledge for eco-friendly practices:");
+                if (userName) {
+                    alert(`Thank you, ${userName}! You've pledged to adopt eco-friendly practices!`);
+                    // Store the pledge data (in backend or local storage if needed)
+                }
+            };
+        });
+    </script>
+</body>
+</html>
